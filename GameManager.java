@@ -26,8 +26,6 @@ class GameManager {
         
         readFromFile();
         tableGenerator();
-        //System.out.println(tables[0].p1.name);
-        //System.out.println(tables[1].p1.name);
         showMenu();
     }
          
@@ -37,29 +35,25 @@ class GameManager {
         
 	    while (selection != 0) {
 	        System.out.println("\n\n\t\t***Menu***\n");
-	        System.out.println("Current round: " + roundNumber);
-			System.out.println("1. Show matches for this round");
-			System.out.println("2. Register placements");
-			System.out.println("3. Next round");
-			System.out.println("4. SORT");
-			System.out.println("5. Lost?");
-			System.out.println("6. Kast ut leietager.");
-			System.out.println("7. Ok husleien.");
-			System.out.println("8. Avslutt systemet.");
+	        System.out.println("Current round: #" + roundNumber);
+			System.out.println("1. Show matches for current round");
+			System.out.println("2. Register result for a match");
+			System.out.println("3. Print results for all registerd matches");
+            System.out.println("4. Print all eliminated players");
+			System.out.println("5. Next round -->");
+			System.out.println("99. Exit");
 			
-	        System.out.println("\nChoose a number between 1-8: ");
+	        System.out.println("\nChoose a number between 1-4: ");
 	        selection = in.nextInt();
 			
 			switch(selection) {
-				case 1: showMatchesforCurrentRound(); break;
-				case 2: registerPlacement(); clearScreen(); break;
-				case 3: nextRound(); clearScreen(); break;
-				case 4: sortPlacement(1, roundNumber + 1); break;
-				case 5: break;
-				case 6: break;
-				case 7: break;
-				case 8: System.out.println("\nSystemet avsluttes!"); System.exit(0);
-				default: System.out.println("\nUse a number between 1-8!\n");				
+				case 1: clearScreen(); showMatchesforCurrentRound(); break;
+				case 2: clearScreen(); showMatchesforCurrentRound(); registerPlacement(); clearScreen(); break;
+				case 3: clearScreen(); showAllRegisterdMatches(); break;
+				case 4: clearScreen(); showEliminatedPlayers(); break;
+                case 5: clearScreen(); nextRound(); break;
+				case 99: System.out.println("\nClosing..."); System.exit(0);
+				default: System.out.println("\nUse a number between 1-6!\n");				
 					
 		 	}
 		}
@@ -83,126 +77,139 @@ class GameManager {
     }
     
     void nextRound() {
-        roundNumber++;
-        tableGenerator();
+        if(roundNumber == 1 && tables[0].placementSet && tables[1].placementSet &&
+        tables[2].placementSet && tables[3].placementSet) {
+            roundNumber++;
+            tableGenerator();
+        } else if(roundNumber == 2 && tables[4].placementSet && tables[5].placementSet &&
+        tables[6].placementSet && tables[7].placementSet) {
+            roundNumber++;
+            tableGenerator();
+        } else if(roundNumber == 3 && tables[8].placementSet && tables[9].placementSet &&
+        tables[10].placementSet) {
+            roundNumber++;
+            tableGenerator();
+        } else if(roundNumber == 4 && tables[11].placementSet) {
+            roundNumber++;
+            tableGenerator();
+        } else if(roundNumber == 5 && tables[12].placementSet) {
+            roundNumber++;
+            tableGenerator();
+        } else if(roundNumber >= 6 && tables[13].placementSet) {
+            System.out.println("The tournament has ended,\n" + 
+            "this is the final result: ");
+            System.out.println("1st: " + tables[13].placements[0].name);
+            System.out.println("2nd: " + tables[13].placements[1].name);
+            System.out.println("3rd: " + tables[13].placements[2].name);
+            System.out.println("4th: " + tables[13].placements[3].name);
+        } else {
+            System.out.println("Some matches need placements, these have: ");
+            showAllRegisterdMatches();
+        }
     }
     
     void tableGenerator() {
-        int playerID = 0;
-        int whatPlace = 1;
+        int skipper = 0;
         
         if(roundNumber == 1) {
             for(int i = 0; i < 4; i++) {
-                tables[i] = new Table(players[playerID], players[playerID + 1], players[playerID + 2], players[playerID + 3]);
-                playerID += 4;
+                tables[i] = new Table(players[skipper], players[skipper + 1],
+                players[skipper + 2], players[skipper + 3]);
+                skipper += 4;
             }
         } else if(roundNumber == 2) {
             for(int i = 4; i < 8; i++) {
-                tables[i] = new Table(sortPlacement(whatPlace, roundNumber)[playerID], 
-                sortPlacement(whatPlace, roundNumber)[playerID + 1], 
-                sortPlacement(whatPlace, roundNumber)[playerID + 2], 
-                sortPlacement(whatPlace, roundNumber)[playerID + 3]);
-                whatPlace++;
+                tables[i] = new Table(tables[0].placements[skipper], tables[1].placements[skipper],
+                tables[2].placements[skipper], tables[3].placements[skipper]);
+                skipper++;
             }
         } else if(roundNumber == 3) {
-            tables[8] = new Table(sortPlacement(1, roundNumber)[playerID], 
-            sortPlacement(2, roundNumber)[playerID], 
-            sortPlacement(1, roundNumber)[playerID + 1], 
-            sortPlacement(2, roundNumber)[playerID + 1]);
+            tables[8] = new Table(tables[4].placements[0], tables[4].placements[1],
+            tables[5].placements[0], tables[5].placements[1]);
             
-            tables[9] = new Table(sortPlacement(1, roundNumber)[playerID + 2], 
-            sortPlacement(2, roundNumber)[playerID + 2], 
-            sortPlacement(3, roundNumber)[playerID], 
-            sortPlacement(4, roundNumber)[playerID]);
+            tables[9] = new Table(tables[6].placements[0], tables[6].placements[1],
+            tables[4].placements[2], tables[4].placements[3]);
             
-            tables[10] = new Table(sortPlacement(1, roundNumber)[playerID + 3], 
-            sortPlacement(2, roundNumber)[playerID + 3], 
-            sortPlacement(3, roundNumber)[playerID + 1], 
-            sortPlacement(4, roundNumber)[playerID + 1]);
+            tables[10] = new Table(tables[7].placements[0], tables[7].placements[1],
+            tables[5].placements[2], tables[5].placements[3]);
         } else if(roundNumber == 4) {
-            //Ligger en feil her inne.
-            tables[11] = new Table(sortPlacement(1, roundNumber)[playerID + 1], 
-            sortPlacement(2, roundNumber)[playerID + 1], 
-            sortPlacement(1, roundNumber)[playerID + 2], 
-            sortPlacement(2, roundNumber)[playerID + 2]);
+            tables[11] = new Table(tables[9].placements[0], tables[9].placements[1],
+            tables[10].placements[0], tables[10].placements[1]);
         } else if(roundNumber == 5) {
-            tables[12] = new Table(sortPlacement(1, roundNumber)[playerID], 
-            sortPlacement(2, roundNumber)[playerID], 
-            sortPlacement(3, (roundNumber - 1))[playerID], 
-            sortPlacement(4, (roundNumber - 1))[playerID]);
+            tables[12] = new Table(tables[11].placements[0], tables[11].placements[1],
+            tables[8].placements[2], tables[8].placements[3]);
         } else if(roundNumber == 6) {
-            tables[13] = new Table(sortPlacement(1, roundNumber - 2)[playerID], 
-            sortPlacement(2, roundNumber - 2)[playerID], 
-            sortPlacement(1, roundNumber)[playerID], 
-            sortPlacement(2, roundNumber)[playerID]);
+            //Final
+            tables[13] = new Table(tables[8].placements[0], tables[8].placements[1],
+            tables[12].placements[0], tables[12].placements[1]);
         }
     }
     
     void showMatchesforCurrentRound() {
         if(roundNumber == 1) {
-            System.out.println("Round #" + roundNumber);
             for(int i = 0; i < 4; i++) {
-                System.out.println("Table #" + (i + 1));
-                System.out.println(tables[i].p1.getName() + " vs " + 
-                tables[i].p2.getName() + " vs " + 
-                tables[i].p3.getName() + " vs " + 
-                tables[i].p4.getName() + "\n");
+                System.out.println("Table: #" + (i + 1) + " - " + "MatchID: #" + (i + 1));
+                System.out.println(tables[i].p1.name + " vs " + tables[i].p2.name + 
+                " vs " + tables[i].p3.name + " vs " + tables[i].p4.name);
+                System.out.println("");
             }
         } else if(roundNumber == 2) {
-            System.out.println("Round #" + roundNumber);
             for(int i = 4; i < 8; i++) {
-                System.out.println("Table #" + (i + 1));
-                System.out.println(tables[i].p1.getName() + " vs " + 
-                tables[i].p2.getName() + " vs " + 
-                tables[i].p3.getName() + " vs " + 
-                tables[i].p4.getName() + "\n");
+                System.out.println("Table: #" + (i - 3) + " - " + "MatchID: #" + (i + 1));
+                System.out.println(tables[i].p1.name + " vs " + tables[i].p2.name + 
+                " vs " + tables[i].p3.name + " vs " + tables[i].p4.name);
+                System.out.println("");
             }
         } else if(roundNumber == 3) {
-            System.out.println("Round #" + roundNumber);
             for(int i = 8; i < 11; i++) {
-                System.out.println("Table #" + (i + 1));
-                System.out.println(tables[i].p1.getName() + " vs " + 
-                tables[i].p2.getName() + " vs " + 
-                tables[i].p3.getName() + " vs " + 
-                tables[i].p4.getName() + "\n");
+                System.out.println("Table: #" + (i - 7) + " - " + "MatchID: #" + (i + 1));
+                if(i == 8) {
+                    System.out.println("*Winner bracket semi-final - winner goes to final*");
+                }
+                System.out.println(tables[i].p1.name + " vs " + tables[i].p2.name + 
+                " vs " + tables[i].p3.name + " vs " + tables[i].p4.name);
+                System.out.println("");
             }
         } else if(roundNumber == 4) {
-            System.out.println("Round #" + roundNumber);
-            
-            System.out.println("Table #" + (11 + 1));
-            System.out.println(tables[11].p1.getName() + " vs " + 
-            tables[11].p2.getName() + " vs " + 
-            tables[11].p3.getName() + " vs " + 
-            tables[11].p4.getName() + "\n");
+            System.out.println("Table: #1" + " - " + "MatchID: #12");
+            System.out.println(tables[11].p1.name + " vs " + tables[11].p2.name + 
+            " vs " + tables[11].p3.name + " vs " + tables[11].p4.name);
+            System.out.println("");
         } else if(roundNumber == 5) {
-            System.out.println("Round #" + roundNumber);
-            
-            System.out.println("Table #" + (12 + 1));
-            System.out.println(tables[12].p1.getName() + " vs " + 
-            tables[12].p2.getName() + " vs " + 
-            tables[12].p3.getName() + " vs " + 
-            tables[12].p4.getName() + "\n");
+            System.out.println("Table: #1" + " - " + "MatchID: #13");
+            System.out.println("*Losers bracket final - winner goes to final*");
+            System.out.println(tables[12].p1.name + " vs " + tables[12].p2.name + 
+            " vs " + tables[12].p3.name + " vs " + tables[12].p4.name);
+            System.out.println("");
+        } else if(roundNumber == 6) {
+            System.out.println("Table: #1" + " - " + "MatchID: #14");
+            System.out.println("*Final*");
+            System.out.println(tables[13].p1.name + " vs " + tables[13].p2.name + 
+            " vs " + tables[13].p3.name + " vs " + tables[13].p4.name);
+            System.out.println("");
         }
     }
     
-    Player[] sortPlacement(int place, int round) {
-        Player[] placementSort = new Player[4];
-        
-        for(int i = 0; i < players.length; i++) {
-            for(int j = 0; j < placementSort.length; j++) {
-                if(place == players[i].getPlacement(round - 2) && placementSort[j] == null) {
-                    placementSort[j] = players[i];
-                    break;
+    void showAllRegisterdMatches() {
+        for(int i = 0; i < tables.length; i++) {
+            if(tables[i] == null) {
+                return;
+            }
+            
+            if(tables[i].placementSet == true) {
+                System.out.println("MatchID: #" + (i + 1));
+                for(int j = 0; j < tables[i].placements.length; j++) {
+                    System.out.println("#" + (j + 1) + " " + tables[i].placements[j].name);
                 }
+                System.out.println("");
             }
         }
-        return placementSort;
     }
     
     void registerPlacement() {
         Scanner in = new Scanner(System.in);
         int table = -1;
-        System.out.println("\nWich table to register placements for: ");
+        System.out.println("\nWhich match (MatchID): ");
         table = in.nextInt();
         tables[table - 1].setPlacement();
     }
@@ -210,5 +217,15 @@ class GameManager {
     public static void clearScreen() {  
         System.out.print("\033[H\033[2J");  
         System.out.flush();  
-   } 
+   }
+   
+   void showEliminatedPlayers() {
+        System.out.println("These players are out" +
+        "of the tournament, (has lost twice): ");
+       for(int i = 0; i < players.length; i++) {
+           if(players[i].timesLost == 2) {
+               System.out.println(players[i].name);
+           }
+       }
+   }
 }
