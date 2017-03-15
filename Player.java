@@ -2,11 +2,9 @@ class Player {
     String name;
     //Placement in the different matches.
     int[] placement;
-    boolean elimiated;
     
     Player(String name) {
                 this.name = name;
-                elimiated = false;
                 placement = new int[6];
     }
     
@@ -14,11 +12,15 @@ class Player {
         return name;
     }
     
-    public boolean isEliminated() {
-        return elimiated;
-    }
+
     
     public int getPlacement(int round) {
         return placement[round];
+    }
+    
+    public void setPlacement(int place) {
+        for(int i = 0; i < placement.length; i++) {
+                placement[i] = place;
+        }
     }
 }
