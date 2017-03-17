@@ -43,7 +43,7 @@ class GameManager {
 			System.out.println("5. Next round -->");
 			System.out.println("99. Exit");
 			
-	        System.out.println("\nChoose a number between 1-4: ");
+	        System.out.println("\nChoose a number between 1-5: ");
 	        selection = in.nextInt();
 			
 			switch(selection) {
@@ -53,7 +53,7 @@ class GameManager {
 				case 4: clearScreen(); showEliminatedPlayers(); break;
                 case 5: clearScreen(); nextRound(); break;
 				case 99: System.out.println("\nClosing..."); System.exit(0);
-				default: System.out.println("\nUse a number between 1-6!\n");				
+				default: System.out.println("\nUse a number between 1-5!\n");				
 					
 		 	}
 		}
